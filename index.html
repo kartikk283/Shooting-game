@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooting Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #222; }
+        canvas { display: block; background: #333; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;class Target {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height / 2;
+            this.radius = 20;
+            this.color = "red";
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+
+    let targets = [];
+    for (let i = 0; i < 5; i++) {
+        targets.push(new Target());
+    }
+
+    function drawTargets() {
+        targets.forEach(target => target.draw());
+    }
+
+    canvas.addEventListener("click", (event) => {
+        const { clientX, clientY } = event;
+        targets = targets.filter(target => 
+            Math.hypot(target.x - clientX, target.y - clientY) > target.radius
+        );
+        if (targets.length === 0) {
+            alert("You win!");
+            location.reload();
+        }
+    });
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawTargets();
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+
+</body>
+</html>
